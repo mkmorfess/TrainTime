@@ -1,0 +1,13 @@
+.jumbotron {
+	background: saddlebrown;
+}
+
+.header {
+	color: white;
+}
+
+.trainRows:hover {
+	background: lightgrey;
+}
+
+
