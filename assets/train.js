@@ -1,13 +1,29 @@
 $(document).ready(function() {
 
+	 var config = {
+
+	    apiKey: "AIzaSyB0rlK8J_ln0Vj3iv7ZcUY6O10D2l4ui-E",
+	    authDomain: "traintime-a4768.firebaseapp.com",
+	    databaseURL: "https://traintime-a4768.firebaseio.com",
+	    projectId: "traintime-a4768",
+	    storageBucket: "",
+	    messagingSenderId: "925338888606"
+  };
+
+  firebase.initializeApp(config);
+
 	var trainNumber = 0;
 	var rowNumber = 0;
-	var tableNumber = 0;
+	var database = firebase.database()
 
+database.ref().on("value", function(snapshot) {
 
-$("#submit").on("click", function() {
+	console.log(snapshot.val());
+	console.log(snapshot.val().trainName);
+	console.log(snapshot.val().destination);
+	console.log(snapshot.val().time);
+	console.log(snapshot.val().frequency);
 
-	var input = [$("#name").val().trim(), $("#destination").val().trim(), $("#time").val().trim(), $("#frequency").val().trim(), "blank"]
 	var tableRow = $("<tr>")
 	
 
@@ -16,36 +32,20 @@ $("#submit").on("click", function() {
 	tableRow.addClass("trainRows")
 	$("#main").append(tableRow)
 
+	input = [snapshot.val().trainName, snapshot.val().destination, snapshot.val().time, snapshot.val().frequency, "blank"]
 
-if ($("#name").val() === "" || $("#destination").val() === "" || $("#time").val() === "" || $("#frequency").val() === ""){
-
-	alert("Please fill out all required fields")
-}
-
-else {
 
 	for (var i = 0; i < 5; i++) {
 
 	var tableData = $("<td>")
 
-	tableData.addClass("table-" + tableNumber)
 	tableData.text(input[i])
-
 	$("#row-" + rowNumber).append(tableData)
 
 }
 
-	trainNumber++
-	rowNumber++
-
-
-$("#name").val("")
-$("#destination").val("")
-$("#time").val("")
-$("#frequency").val("")
-		}
-	});
-
+trainNumber++
+rowNumber++
 
 $(document).on("click", ".trainRows", function(){
 
@@ -60,6 +60,42 @@ else {
 }
 
 });
+	
 
+}, function(errorObject) {
+
+      console.log("The read failed: " + errorObject.code);
+
+    });
+
+
+
+
+$("#submit").on("click", function() {
+
+	var input = [$("#name").val().trim(), $("#destination").val().trim(), $("#time").val().trim(), $("#frequency").val().trim(), "blank"]
+
+	database.ref().set({
+		trainName: input[0],
+		destination: input[1],
+		time: input[2],
+		frequency: input[3]
+	});
+
+
+if ($("#name").val() === "" || $("#destination").val() === "" || $("#time").val() === "" || $("#frequency").val() === ""){
+
+	alert("Please fill out all required fields")
+}
+
+$("#name").val("")
+$("#destination").val("")
+$("#time").val("")
+$("#frequency").val("")
+
+	trainNumber++
+	rowNumber++
+		 
+	});
 
 });
