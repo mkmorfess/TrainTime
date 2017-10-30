@@ -14,15 +14,18 @@ $(document).ready(function() {
 
 	var trainNumber = 0;
 	var rowNumber = 0;
-	var database = firebase.database()
+	var database = firebase.database();
+	var dataFre = 0;
+	var dataTime = 0;
 
-database.ref().on("value", function(snapshot) {
 
-	console.log(snapshot.val());
-	console.log(snapshot.val().trainName);
-	console.log(snapshot.val().destination);
-	console.log(snapshot.val().time);
-	console.log(snapshot.val().frequency);
+database.ref().on("child_added", function(snapshot) {
+
+	// console.log(snapshot.val());
+	// console.log(snapshot.val().trainName);
+	// console.log(snapshot.val().destination);
+	// console.log(snapshot.val().time);
+	// console.log(snapshot.val().frequency);
 
 	var tableRow = $("<tr>")
 	
@@ -37,22 +40,95 @@ database.ref().on("value", function(snapshot) {
 
 	for (var i = 0; i < 5; i++) {
 
+	if (i === 2) {
+
+		var tableData = $("<td>")
+
+	tableData.attr("data-time-" + dataTime, input[i])
+	tableData.text(input[i])
+	$("#row-" + rowNumber).append(tableData)
+	tableData.addClass("time-" + dataTime)
+
+
+	}
+
+	else if (i === 3) {
+
+		var tableData = $("<td>")
+
+	tableData.attr("data-frequency-" + dataFre, input[i])
+	tableData.text(input[i])
+	$("#row-" + rowNumber).append(tableData)
+	tableData.addClass("frequent-" + dataFre)
+
+	}
+
+	else if (i === 4) {
+
+		var tableData = $("<td>")
+
+	tableData.text(input[i])
+	$("#row-" + rowNumber).append(tableData)
+	tableData.addClass("minutes-" + dataFre)
+
+	}
+
+	else {
+
 	var tableData = $("<td>")
 
 	tableData.text(input[i])
 	$("#row-" + rowNumber).append(tableData)
+}
 
 }
 
+	var tFrequency = $("td.frequent-" + dataFre).attr("data-frequency-" + dataFre)
+	// console.log(tFrequency);
+	var startTime = $("td.time-" + dataTime).attr("data-time-" + dataTime)
+	// console.log(startTime);
+
+	var firstTimeConverted = moment(startTime, "hh:mm").subtract(1, "years");
+    // console.log(firstTimeConverted);
+
+    var currentTime = moment();
+    // console.log("CURRENT TIME: " + moment(currentTime).format("hh:mm"));
+
+    var diffTime = moment().diff(moment(firstTimeConverted), "minutes");
+    // console.log("DIFFERENCE IN TIME: " + diffTime);
+
+    var tRemainder = diffTime % tFrequency;
+    // console.log(tRemainder);
+
+    var tMinutesTillTrain = tFrequency - tRemainder;
+    // console.log("MINUTES TILL TRAIN: " + tMinutesTillTrain);
+
+     var nextTrain = moment().add(tMinutesTillTrain, "minutes");
+    // console.log("ARRIVAL TIME: " + moment(nextTrain).format("hh:mm"));
+
+    $("td.minutes-" + dataFre).html(tMinutesTillTrain)
+    $("td.time-" + dataTime).html(moment(nextTrain).format("hh:mm"))
+
+dataFre++
+dataTime++
 trainNumber++
 rowNumber++
 
-$(document).on("click", ".trainRows", function(){
+$(".trainRows").off().on("click", function(){
 
 	var remove = confirm("Do you want to remove?")
 
 	if(remove === true) {
-	$(this).remove()
+
+		$(this).remove()
+
+	database.ref().on("child_removed", function(key){
+
+		ref().remove(key)
+
+
+	});	
+	
 }
 
 else {
@@ -75,7 +151,7 @@ $("#submit").on("click", function() {
 
 	var input = [$("#name").val().trim(), $("#destination").val().trim(), $("#time").val().trim(), $("#frequency").val().trim(), "blank"]
 
-	database.ref().set({
+	database.ref().push({
 		trainName: input[0],
 		destination: input[1],
 		time: input[2],
@@ -88,7 +164,7 @@ if ($("#name").val() === "" || $("#destination").val() === "" || $("#time").val(
 	alert("Please fill out all required fields")
 }
 
-$("#name").val("")
+$("#name").val("Train-")
 $("#destination").val("")
 $("#time").val("")
 $("#frequency").val("")
@@ -97,5 +173,8 @@ $("#frequency").val("")
 	rowNumber++
 		 
 	});
+
+
+
 
 });
