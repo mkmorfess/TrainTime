@@ -109,6 +109,7 @@ database.ref().on("child_added", function(snapshot) {
     $("td.minutes-" + dataFre).html(tMinutesTillTrain)
     $("td.time-" + dataTime).html(moment(nextTrain).format("hh:mm"))
 
+
 dataFre++
 dataTime++
 trainNumber++
@@ -151,6 +152,15 @@ $("#submit").on("click", function() {
 
 	var input = [$("#name").val().trim(), $("#destination").val().trim(), $("#time").val().trim(), $("#frequency").val().trim(), "blank"]
 
+	
+
+if ($("#name").val() === "" || $("#destination").val() === "" || $("#time").val() === "" || $("#frequency").val() === ""){
+
+	alert("Please fill out all required fields")
+}
+
+else {
+
 	database.ref().push({
 		trainName: input[0],
 		destination: input[1],
@@ -158,10 +168,8 @@ $("#submit").on("click", function() {
 		frequency: input[3]
 	});
 
-
-if ($("#name").val() === "" || $("#destination").val() === "" || $("#time").val() === "" || $("#frequency").val() === ""){
-
-	alert("Please fill out all required fields")
+	trainNumber++
+	rowNumber++
 }
 
 $("#name").val("Train-")
@@ -169,8 +177,7 @@ $("#destination").val("")
 $("#time").val("")
 $("#frequency").val("")
 
-	trainNumber++
-	rowNumber++
+	
 		 
 	});
 
