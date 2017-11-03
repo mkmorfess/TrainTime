@@ -170,12 +170,14 @@ else {
 
 	trainNumber++
 	rowNumber++
+
+	$("#name").val("Train-")
+	$("#destination").val("")
+	$("#time").val("")
+	$("#frequency").val("")
 }
 
-$("#name").val("Train-")
-$("#destination").val("")
-$("#time").val("")
-$("#frequency").val("")
+
 
 	
 		 
